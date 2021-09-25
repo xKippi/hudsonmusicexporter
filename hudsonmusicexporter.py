@@ -11,7 +11,7 @@ VERSION = "1.0"
 ZOOMED = True
 ZOOM = 1.05
 ZOOM_CONSTANTS = (767.65, 1023.81)  # Determined by linear regression
-OUTPUT_DIRECTORY = os.path.join(str(Path.home()), "Documents", "HudsonBook1")
+OUTPUT_FILE = os.path.join(str(Path.home()), "Documents", "book.pdf")
 
 DEFAULT_SIZES = [
     (735 / 1920, 980 / 1080),   # RELATIVE_PAGE_SIZE
@@ -24,19 +24,14 @@ ZOOMED_SIZES.append((round((1920 - ZOOMED_SIZES[0][0] * 1920) / 2) / 1920, round
 ZOOMED_SIZES.append((round((1920 - ZOOMED_SIZES[0][0] * 2 * 1920) / 2) / 1920, ZOOMED_SIZES[1][1]))
 
 
-def make_screenshot(output_file, offset, page_size):
-    screenshot = ImageGrab.grab(bbox=(offset[0], offset[1], offset[0] + page_size[0], offset[1] + page_size[1]))
-    screenshot.save(output_file)
-
-
-def capture(output_dir, offset, page_size):
+def capture(images, offset, page_size):
     global count
-    make_screenshot(os.path.join(output_dir, "page" + str(count) + ".png"), offset, page_size)
+    images.append(ImageGrab.grab(bbox=(offset[0], offset[1], offset[0] + page_size[0], offset[1] + page_size[1])))
     print("Captured page " + str(count))
     count += 1
 
 
-screenshot = ImageGrab.grab(bbox = None)
+screenshot = ImageGrab.grab()
 
 sizes = ZOOMED_SIZES if ZOOMED else DEFAULT_SIZES
 page_size = (sizes[0][0] * screenshot.size[0], sizes[0][1] * screenshot.size[1])
@@ -69,22 +64,24 @@ print()
 print()
 
 count = 1
-output_dir = os.path.join(OUTPUT_DIRECTORY, "pages")
+images = []
 odd_page_count = page_count - (page_count+1) % 2
 keyboard.wait("ctrl+enter")
 
-Path(output_dir).mkdir(parents=True, exist_ok=True)
-capture(output_dir, single_page_offset, page_size)
+capture(images, single_page_offset, page_size)
 
 while count < odd_page_count:
     keyboard.send("right")
     time.sleep(2)
-    capture(output_dir, double_page_offset[0], page_size)
-    capture(output_dir, double_page_offset[1], page_size)
+    capture(images, double_page_offset[0], page_size)
+    capture(images, double_page_offset[1], page_size)
 
 if odd_page_count != page_count:
     keyboard.send("right")
     time.sleep(2)
-    capture(output_dir, single_page_offset, page_size)
+    capture(images, single_page_offset, page_size)
+
+print("Creating PDF as \"" + OUTPUT_FILE + "\"...")
+images.pop(0).save(OUTPUT_FILE, "PDF", resolution=100.0, save_all=True, append_images=images)
 
 print("Done!")
