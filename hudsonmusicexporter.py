@@ -107,7 +107,7 @@ def main():
     print(" - Open the Hudson Music application")
     print(" - Find the book you want to export and press \"Read\"")
     print(" - Navigate to the first page of the book")
-    print(" - Set the zoom to 105% (bottom left corner)")
+    print(" - Set the zoom to " + str(zoom * 100) + "% (bottom left corner)")
     print(" - Go into fullscreen mode")
     print(" - Press [Ctrl] + [Enter]")
     print(" - Wait until the program completes")
