@@ -19,10 +19,13 @@ from tkinter.filedialog import asksaveasfilename
 
 # --- BEGIN CONFIG ---
 
+# Define if the default zoom level should be used
 zoomed = True
 
+# The zoom level the program has been set to
 zoom = 1.05
 
+# The file into which the book should be saven
 output_file = None
 
 # --- END CONFIG ---
